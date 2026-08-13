@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://api.anthropic.com">
+<title>Word to Code</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>Word <span>&rarr;</span> Code</h1>
+
+  <div class="pills" id="engine-pills" role="group" aria-label="Translation engine">
+    <button data-engine="rule" class="on" type="button">Rule-based (offline)</button>
+    <button data-engine="ai" type="button">Claude AI</button>
+  </div>
+
+  <div id="keyrow" class="hidden">
+    <input id="apikey" type="password" placeholder="Anthropic API key (sk-ant-...)"
+           autocomplete="off" spellcheck="false" aria-label="Anthropic API key">
+    <div id="keynote"></div>
+  </div>
+
+  <button id="history-btn" class="ghost" type="button" title="Translation history (Ctrl+H)">History</button>
+</header>
+
+<div id="layout">
+  <main>
+    <div class="tabs" role="tablist">
+      <button id="tabbtn-nl" class="on" type="button" role="tab">Describe &rarr; Code</button>
+      <button id="tabbtn-code" type="button" role="tab">Code &rarr; Code</button>
+    </div>
+
+    <!-- Tab 1: natural language -> code -->
+    <section class="panel on" id="panel-nl" role="tabpanel">
+      <label for="nl-input">Describe what the program should do &mdash; in any human language</label>
+      <textarea id="nl-input" spellcheck="false"
+        placeholder="make a list of numbers 1 to 100 and print only the even ones&#10;imprime los numeros pares del 1 al 50&#10;ask the user for their name and greet them"></textarea>
+      <div class="row">
+        <div>
+          <label for="nl-target">Target language</label>
+          <select id="nl-target"></select>
+        </div>
+        <button class="go" id="nl-go" type="button">Translate <kbd>Ctrl</kbd>+<kbd>&#9166;</kbd></button>
+      </div>
+      <div class="hint">Rule-based mode understands a fixed set of phrases (counting, sums, variables,
+        FizzBuzz, factorial, Fibonacci, countdowns, greetings, times tables&hellip;) in English, Spanish,
+        French, German and Portuguese. Claude AI mode handles any sentence in any language.</div>
+      <div class="errbox" id="nl-err" role="alert"></div>
+      <div class="out" id="nl-out">
+        <div class="assump" id="nl-assump" hidden></div>
+        <div class="codewrap">
+          <div class="codebar">
+            <span class="langtag" id="nl-langtag"></span>
+            <button class="mini" data-save="nl" type="button" title="Save to file (Ctrl+S)">Save</button>
+            <button class="mini" data-copy="nl" type="button" title="Copy to clipboard">Copy</button>
+          </div>
+          <pre><code id="nl-code"></code></pre>
+        </div>
+        <div class="explain"><h4>Explanation</h4><ul id="nl-explain"></ul></div>
+      </div>
+    </section>
+
+    <!-- Tab 2: code -> code -->
+    <section class="panel" id="panel-code" role="tabpanel">
+      <div class="row tight">
+        <div>
+          <label for="code-source">Source language</label>
+          <select id="code-source"></select>
+        </div>
+        <button class="swap" id="code-swap" type="button" title="Swap source and target">&#8646;</button>
+        <div>
+          <label for="code-target">Target language</label>
+          <select id="code-target"></select>
+        </div>
+      </div>
+      <label for="code-input">Source code</label>
+      <textarea id="code-input" class="tall" spellcheck="false"
+        placeholder="total = 0&#10;for i in range(1, 11):&#10;    if i % 2 == 0:&#10;        total = total + i&#10;print(f&quot;Sum of evens: {total}&quot;)"></textarea>
+      <div class="row">
+        <button class="go" id="code-go" type="button">Translate <kbd>Ctrl</kbd>+<kbd>&#9166;</kbd></button>
+      </div>
+      <div class="hint">Rule-based mode reads a simple subset of Python or JavaScript (prints, variables,
+        for/while/if, comments) and rewrites it in any target language. Claude AI mode translates full
+        programs between any pair of languages, preserving behavior and idiom.</div>
+      <div class="errbox" id="code-err" role="alert"></div>
+      <div class="out" id="code-out">
+        <div class="assump" id="code-assump" hidden></div>
+        <div class="codewrap">
+          <div class="codebar">
+            <span class="langtag" id="code-langtag"></span>
+            <button class="mini" data-save="code" type="button" title="Save to file (Ctrl+S)">Save</button>
+            <button class="mini" data-copy="code" type="button" title="Copy to clipboard">Copy</button>
+          </div>
+          <pre><code id="code-code"></code></pre>
+        </div>
+        <div class="explain"><h4>Explanation</h4><ul id="code-explain"></ul></div>
+      </div>
+    </section>
+  </main>
+
+  <aside id="history" class="hidden" aria-label="Translation history">
+    <div class="hist-head">
+      <strong>History</strong>
+      <button id="history-clear" class="ghost small" type="button">Clear</button>
+    </div>
+    <div id="history-list"></div>
+    <p class="hist-empty" id="history-empty">Nothing yet. Translations you run are saved here.</p>
+  </aside>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

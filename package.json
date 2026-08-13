@@ -1,0 +1,24 @@
+{
+  "name": "word-to-code",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Translate plain-language descriptions into code, and code between languages — offline rule engine plus Claude AI.",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "smoke": "electron scripts/smoke.js",
+    "web": "node scripts/serve.js"
+  },
+  "keywords": [
+    "code-generation",
+    "translation",
+    "electron",
+    "claude"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^43.4.0"
+  }
+}
