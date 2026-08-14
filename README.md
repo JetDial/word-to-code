@@ -29,6 +29,41 @@ That opens the desktop app. Other scripts:
 | `npm run smoke` | Boot the real UI headlessly and drive both engines through the DOM        |
 | `npm run web`   | Serve the same UI at `http://localhost:4173` to use it in a browser       |
 
+## Docker
+
+The desktop build is Electron and needs a display, so the container runs **browser mode** —
+the same UI served over HTTP.
+
+```bash
+docker build -t word-to-code .
+docker run --rm -p 4173:4173 word-to-code
+```
+
+Then open <http://localhost:4173>. Or with Compose:
+
+```bash
+docker compose up --build
+```
+
+Run the test suite in the container instead of the server:
+
+```bash
+docker build --target test .
+```
+
+The image installs nothing: the app has zero runtime dependencies, and Electron is a
+devDependency that a headless container has no use for. That keeps it to the `node:22-alpine`
+base plus a few source files, running as the unprivileged `node` user. The build also runs the
+unit tests in an earlier stage, so a broken engine fails the image rather than shipping.
+
+Note that **Claude AI mode in the container calls the API straight from your browser**, the same
+way plain browser mode does — the key is held in the browser's `localStorage`, not in the image
+or the container. Only the desktop build gets OS-keychain encryption and main-process requests.
+Both offline engines work in the container with no key and no network.
+
+`scripts/serve.js` binds to `127.0.0.1` by default so `npm run web` never exposes the app to
+your network unintentionally; the container sets `HOST=0.0.0.0` so the published port works.
+
 ## Claude AI mode
 
 Switch the engine to **Claude AI** in the header and paste an Anthropic API key from

@@ -1,0 +1,16 @@
+node_modules/
+.git/
+.gitignore
+dist/
+out/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.env
+Dockerfile
+.dockerignore
+docker-compose.yml
+README.md
+electron/
+scripts/smoke.js

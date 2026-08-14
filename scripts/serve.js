@@ -10,6 +10,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..', 'src');
 const PORT = Number(process.env.PORT) || 4173;
+// Loopback by default so `npm run web` never exposes the app to the network by
+// accident; containers set HOST=0.0.0.0 so the published port is reachable.
+const HOST = process.env.HOST || '127.0.0.1';
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -44,7 +47,13 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, HOST, () => {
   console.log('Word to Code (browser mode) → http://localhost:' + PORT);
   console.log('Press Ctrl+C to stop.');
 });
+
+// Containers deliver SIGTERM on `docker stop`; exit promptly instead of
+// waiting out the 10s kill timeout.
+for (const signal of ['SIGTERM', 'SIGINT']) {
+  process.on(signal, () => server.close(() => process.exit(0)));
+}

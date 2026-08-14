@@ -1,0 +1,14 @@
+services:
+  word-to-code:
+    build: .
+    image: word-to-code
+    ports:
+      - "4173:4173"
+    environment:
+      PORT: 4173
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
