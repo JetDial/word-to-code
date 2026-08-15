@@ -13,7 +13,17 @@ between programming languages**. Every translation runs through one of two engin
 Every result comes with syntax highlighting, the assumptions the engine made, a line-by-line
 explanation, and one-click copy or save-to-file.
 
-## Running it
+## Use it in the browser, without installing anything
+
+**https://jetdial.github.io/word-to-code/**
+
+That is the same UI as the desktop app — `src/` is plain ES modules with no
+Electron dependency, so it runs as well in a tab as it does in a window. The
+**rule-based engine works entirely offline** in the page. The **Claude engine
+asks for your own Anthropic API key**, which stays in your browser and is sent
+only to Anthropic; no key is built into the site.
+
+## Running it as a desktop app
 
 ```bash
 npm install
