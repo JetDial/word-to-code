@@ -1,0 +1,55 @@
+# Publish the browser build to GitHub Pages.
+#
+# Only src/ is served. That directory is the app's UI and translation engines --
+# plain ES modules with no bundler and no Electron dependency, which is what
+# `npm run web` already serves over localhost. The electron/ wrapper stays out
+# of the published site: it is the desktop shell, and a browser has no use for
+# it.
+#
+# The rule-based translator works entirely offline in the page. The Claude
+# engine asks the visitor for their OWN Anthropic API key -- nothing is baked
+# into the build, and the key never leaves their browser.
+name: Publish the browser build
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; never cancel a running one half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pages runs Jekyll unless told otherwise, and Jekyll drops anything
+      # whose name begins with an underscore.
+      - name: Stop Pages from running Jekyll over the site
+        run: touch src/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: src
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
